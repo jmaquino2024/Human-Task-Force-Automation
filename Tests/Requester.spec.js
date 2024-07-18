@@ -121,7 +121,7 @@ test('Connecting Your Wallet', async () => {
   await browserContext.close();
 });
 
-test.only('Profile Update', async () => {
+test('Profile Update', async () => {
   const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
   const userDataDir = '/tmp/test-user-data-dir';
 

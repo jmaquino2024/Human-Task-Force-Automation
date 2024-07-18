@@ -35,7 +35,7 @@ test('Profile Update', async () => {
     // Reload the page
     await page.reload();
 
-    await page.pause();
+    // await page.pause();
 
     // Perform the login steps
     await page.getByRole('link', { name: 'Sign In' }).click();
