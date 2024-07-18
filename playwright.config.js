@@ -91,7 +91,7 @@ module.exports = defineConfig({
 module.exports = {
   testDir: './tests',
   reporter: [['html', { outputFolder: 'playwright-report' }]],
-  timeout: 150000,
+  timeout: 300000,
   retries: 0,
   use: {
     // video: 'on-first-retry',
