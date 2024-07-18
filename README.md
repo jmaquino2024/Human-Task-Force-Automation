@@ -16,6 +16,7 @@ Make sure you have the following installed on your system:
    "npm install"
    
 4. Install Playwright browsers:
+
    "npx playwright install"
    
 Running Tests
