@@ -19,11 +19,11 @@ Make sure you have the following installed on your system:
 
    "npx playwright install"
    
-Running Tests
-Running All Tests
-To run all tests, use the following command:
+   Running Tests
+   Running All Tests
+   To run all tests, use the following command:
 
-"npx playwright test"
+   "npx playwright test"
 
 5. Running a Specific Test
 To run a specific test file, use:
