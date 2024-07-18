@@ -7,18 +7,20 @@ Make sure you have the following installed on your system:
 
 ### Installation
 1. Clone the repository:
+
    git clone https://github.com/yourusername/your-repo-name.git
    cd your-repo-name
 
-2. Install the dependencies:
-    npm install
-3. Install Playwright browsers:
+3. Install the dependencies:
+
+   npm install
+4. Install Playwright browsers:
    npx playwright install
 Running Tests
 Running All Tests
 To run all tests, use the following command:
 npx playwright test
-4. Running a Specific Test
+5. Running a Specific Test
 To run a specific test file, use:
 npx playwright test path/to/your/testfile.spec.ts
 Headless Mode
