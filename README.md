@@ -13,18 +13,23 @@ Make sure you have the following installed on your system:
 
 3. Install the dependencies:
 
-   npm install
+   "npm install"
+   
 4. Install Playwright browsers:
-   npx playwright install
+   "npx playwright install"
+   
 Running Tests
 Running All Tests
 To run all tests, use the following command:
-npx playwright test
+
+"npx playwright test"
+
 5. Running a Specific Test
 To run a specific test file, use:
 
-npx playwright test path/to/your/testfile.spec.ts
+"npx playwright test path/to/your/testfile.spec.ts"
+
 Headless Mode
 By default, Playwright runs in headless mode. If you want to see the browser UI during the test, you can run tests in headful mode by adding the --headed flag:
 
-npx playwright test --headed
+"npx playwright test --headed"
