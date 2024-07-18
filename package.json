@@ -1,14 +1,14 @@
 {
   "name": "playwright_automation",
   "version": "1.0.0",
-  "description": "",
+  "description": "Make sure you have the following installed on your system:\r - Node.js (>=14.x)\r - npm (comes with Node.js)",
   "main": "index.js",
   "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.44.1",
+    "@playwright/test": "^1.45.2",
     "@types/node": "^20.12.12"
   },
   "dependencies": {
