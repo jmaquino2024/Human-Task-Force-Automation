@@ -34,3 +34,8 @@ Headless Mode
 By default, Playwright runs in headless mode. If you want to see the browser UI during the test, you can run tests in headful mode by adding the --headed flag:
 
    "npx playwright test --headed"
+
+Adding MetaMask Extension
+This project includes the MetaMask extension to enable automated interactions with web3-enabled applications. To add the MetaMask extension:
+
+Download the MetaMask extension and locate its directory on your system.
