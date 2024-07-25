@@ -108,8 +108,7 @@ test('Assistant - Profile update', async () => {
         await page.waitForTimeout(2000); // 2 seconds delay
     
         await page.pause();
-
-        // Perform logout
+        
         await page.getByRole('button', { name: '0xB7F....986' }).click();
         await page.getByRole('link', { name: 'Profile' }).click();
 

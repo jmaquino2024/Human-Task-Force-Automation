@@ -97,6 +97,8 @@ test('MetaMask Login/Sign In Using Meta', async () => {
   // Wait for navigation to the dashboard URL
   await page.waitForURL('https://develop.humandao.org/app', { timeout: 60000 });
 
+  console.log('Logged in successfully.');
+
   // Wait for a while before logging out
   await page.waitForTimeout(3000); // 5 seconds delay
 
@@ -107,10 +109,15 @@ test('MetaMask Login/Sign In Using Meta', async () => {
  await page.getByRole('button', { name: '0xfB8....719' }).click();
  await page.getByRole('button', { name: 'Log out' }).click();
 
+ console.log('Logged out successfully.');
+
  await page.waitForLoadState('load');
 
   //  // Pause the script execution to inspect the final state
   //  await page.pause();
+
+  // Wait for 30 seconds to ensure the changes are saved
+  await page.waitForTimeout(5000);
 
    // Close the browser
    await browserContext.close();
