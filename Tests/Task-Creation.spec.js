@@ -36,7 +36,7 @@ function generateRandomTitle() {
 }
 
 test('Task Creation', async () => {
-  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
   const userDataDir = '/tmp/test-user-data-dir';
 
   // Launch browser with MetaMask extension and set slowMo
@@ -292,7 +292,7 @@ test('Task Creation', async () => {
   // Click the task and verify using the title
   await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
   await page.click(`text=${randomTitle}`);
-  console.log(`Clicked on the task with title: ${randomTitle}`);
+  console.log(`Verify the task created: ${randomTitle}`);
 
   // Verify the task using the title
   const taskTitle = await page.getByRole('heading', { name: randomTitle }).textContent();
@@ -304,6 +304,76 @@ test('Task Creation', async () => {
 
   // Add a delay to view the page after clicking the "Close" button
   await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+
+  // await page.getByRole('row').locator('svg').first().click();
+
+  // Click the 'Add Energy' button
+  await page.getByRole('button', { name: 'Add Energy' }).click();
+  
+  // Retrieve the current value of 'Total $ENRG'
+  const currentEnergyValue = await page.getByLabel('Total $ENRG').inputValue();
+  const newEnergyValue = parseInt(currentEnergyValue) + 5;
+  
+  // Click the 'Total $ENRG' field and fill it with the new value
+  await page.getByLabel('Total $ENRG').click();
+  await page.getByLabel('Total $ENRG').fill(newEnergyValue.toString());
+  await page.getByRole('button', { name: 'Perform Change' }).click();
+  
+  // Log the new value of 'Total $ENRG'
+  console.log(`New Energy Value Set: ${newEnergyValue}`);
+  
+  // Wait for Metamask login popup to appear
+  const [metamaskPage3] = await Promise.all([
+      browserContext.waitForEvent('page'),
+  ]);
+  
+  await metamaskPage3.waitForLoadState();
+  
+  // Ensure MetaMask popup is fully loaded
+  await metamaskPage3.waitForSelector('button:has-text("Next")');
+  
+  // Click "Next" button in MetaMask popup
+  await metamaskPage3.click('button:has-text("Next")');
+  
+  // Wait for "Approve" button to appear
+  await metamaskPage3.waitForSelector('button:has-text("Approve")');
+  
+  // Click "Approve" button in MetaMask popup
+  await metamaskPage3.click('button:has-text("Approve")');
+  
+  // Add a delay to allow MetaMask confirmation popup to appear
+  await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+  
+  // Wait for the second MetaMask popup to appear
+  const [metamaskPage4] = await Promise.all([
+      browserContext.waitForEvent('page'), // Wait for the second popup to be created
+  ]);
+  
+  await metamaskPage4.waitForLoadState();
+  
+  // Click "Confirm" button in MetaMask popup
+  await metamaskPage4.click('button:has-text("Confirm")');
+  
+  // Wait for the "Waiting" element to become visible
+  try {
+      await page.waitForSelector('text="Waiting for Contract Approval"', { visible: true, timeout: 60000 });
+      // Click on "Waiting" element if it appears
+      await page.click('text="Waiting for Contract Approval"');
+  } catch (error) {
+      console.error('Waiting for Contract Approval element not found within timeout.');
+  }
+  
+  await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+  
+  // Wait for the text "Successfully Purchased $Enrg" to be visible with an extended timeout
+  try {
+      await page.waitForSelector('text="Deposit Complete"', { visible: true, timeout: 120000 });
+  } catch (error) {
+      console.error('Deposit Complete element not found within timeout.');
+  }
+  
+  // Click "Close" button
+  await page.getByRole('button', { name: 'Close' }).click();
 
   // Close the browser
   await browserContext.close();

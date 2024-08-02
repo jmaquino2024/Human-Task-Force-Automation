@@ -35,8 +35,8 @@ function generateRandomTitle() {
   return titles[randomIndex];
 }
 
-test('Task Creation', async () => {
-    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+test('Task Completions', async () => {
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
     const userDataDir = '/tmp/test-user-data-dir';
   
     // Launch browser with MetaMask extension and set slowMo
@@ -136,7 +136,7 @@ await page.waitForURL('https://develop.humandao.org/app', { timeout: 60000 });
 // Wait for a while before logging out
 await page.waitForTimeout(2000); // 2 seconds delay
 
-// await page.pause();
+await page.pause();
 
 // Highlighted modification
 const fs = require('fs');
@@ -212,13 +212,16 @@ console.log(`Verified total energy: ${totalEnergyString}`);
 await page.getByLabel('Allow multiple completions').click();
 console.log('Clicked on "Allow multiple completions" checkbox');
 
-// Save the new input value to the file
-fs.writeFileSync('lastValue.txt', inputValue.toString());
-    await page.getByLabel('Schedule Task').click();
-    console.log('Clicked on "Schedule Task"');
+  // // Schedule Task with current date
+  // await page.getByLabel('Schedule Task').click();
 
-    await page.getByRole('gridcell', { name: '14' }).click();
-    console.log('Selected date "14" from the schedule grid');
+  // // Get the current date
+  // const currentDate = new Date();
+  // const day = currentDate.getDate();
+  // const dayString = day.toString();
+
+  // // Click the current date in the date picker
+  // await page.getByRole('gridcell', { name: dayString }).click();
 
     await page.getByLabel('Qualification').click();
     console.log('Clicked on "Qualification"');
@@ -321,8 +324,107 @@ fs.writeFileSync('lastValue.txt', inputValue.toString());
   await page.waitForTimeout(3000); // 5 seconds delay, adjust as needed
 
   console.log('Task with completions created');
-  
-  // Close the browser
-  await browserContext.close();
 
+    // Click the task and verify using the title
+    await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
+    await page.click(`text=${randomTitle}`);
+    console.log(`Verify the task created: ${randomTitle}`);
+  
+    // Verify the task using the title
+    const taskTitle = await page.getByRole('heading', { name: randomTitle }).textContent();
+    if (taskTitle === randomTitle) {
+      console.log('Task verified successfully with the title: ' + taskTitle);
+    } else {
+      console.error('Task verification failed. Expected title: ' + randomTitle + ', but got: ' + taskTitle);
+    }
+  
+    // Add a delay to view the page after clicking the "Close" button
+    await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+  
+    // await page.getByRole('row').locator('svg').first().click();
+
+    // Click the 'Add Energy' button
+    await page.getByRole('button', { name: 'Add Energy' }).click();
+    
+// Retrieve and verify the current value of 'Total $ENRG'
+const previousEnergyValue = await page.getByLabel('Total $ENRG').inputValue();
+console.log(`Previous $ENRG: ${previousEnergyValue}`);
+
+const newEnergyValue = parseInt(previousEnergyValue) + 5;
+
+// Fill the 'Total $ENRG' field with the new value
+await page.getByLabel('Total $ENRG').click();
+await page.getByLabel('Total $ENRG').fill(newEnergyValue.toString());
+
+const enrgIncreasePerTask = await page.getByText('$ENRG Increase per task:').textContent();
+console.log(`${enrgIncreasePerTask}`);
+
+// Log the new value of 'Total $ENRG'
+console.log(`New Energy Value Set: ${newEnergyValue}`);
+
+const totalEnrgIncrease = await page.getByText('Total $ENRG Increase:').textContent();
+console.log(`${totalEnrgIncrease}`);
+
+// Verify the total energy for all completions
+const totalEnrgForCompletions = await page.getByRole('textbox').inputValue();
+console.log(`Total $ENRG for all completions: ${totalEnrgForCompletions}`);
+
+await page.getByRole('button', { name: 'Perform Change' }).click();
+    // Wait for Metamask login popup to appear
+    const [metamaskPage3] = await Promise.all([
+        browserContext.waitForEvent('page'),
+    ]);
+    
+    await metamaskPage3.waitForLoadState();
+    
+    // Ensure MetaMask popup is fully loaded
+    await metamaskPage3.waitForSelector('button:has-text("Next")');
+    
+    // Click "Next" button in MetaMask popup
+    await metamaskPage3.click('button:has-text("Next")');
+    
+    // Wait for "Approve" button to appear
+    await metamaskPage3.waitForSelector('button:has-text("Approve")');
+    
+    // Click "Approve" button in MetaMask popup
+    await metamaskPage3.click('button:has-text("Approve")');
+    
+    // Add a delay to allow MetaMask confirmation popup to appear
+    await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+    
+    // Wait for the second MetaMask popup to appear
+    const [metamaskPage4] = await Promise.all([
+        browserContext.waitForEvent('page'), // Wait for the second popup to be created
+    ]);
+    
+    await metamaskPage4.waitForLoadState();
+    
+    // Click "Confirm" button in MetaMask popup
+    await metamaskPage4.click('button:has-text("Confirm")');
+    
+    // Wait for the "Waiting" element to become visible
+    try {
+        await page.waitForSelector('text="Waiting for Contract Approval"', { visible: true, timeout: 60000 });
+        // Click on "Waiting" element if it appears
+        await page.click('text="Waiting for Contract Approval"');
+    } catch (error) {
+        console.error('Waiting for Contract Approval element not found within timeout.');
+    }
+    
+    await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+    
+    // Wait for the text "Successfully Purchased $Enrg" to be visible with an extended timeout
+    try {
+        await page.waitForSelector('text="Deposit Complete"', { visible: true, timeout: 120000 });
+    } catch (error) {
+        console.error('Deposit Complete element not found within timeout.');
+    }
+    
+    console.log('Successfully added energy for completions.');
+
+    // Click "Close" button
+    await page.getByRole('button', { name: 'Close' }).click();
+    
+    // Close the browser
+    await browserContext.close();
 });

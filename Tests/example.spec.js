@@ -1,13 +1,10 @@
 const { test, chromium } = require('@playwright/test');
 const path = require('path');
-const fs = require('fs');
+const moment = require('moment');
 
-test('Profile Update', async () => {
-    const pathToExtension = path.join(__dirname, 'metamask-extension');
-    const userDataDir = path.join(__dirname, 'user-data-dir');
-
-    // Generate a random name
-    const randomName = 'User' + Math.floor(Math.random() * 10000);
+test.only('Assistant - Task Acceptance', async () => {
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
+    const userDataDir = '/tmp/test-user-data-dir';
 
     // Launch browser with MetaMask extension
     const browserContext = await chromium.launchPersistentContext(userDataDir, {
@@ -36,8 +33,6 @@ test('Profile Update', async () => {
     // Reload the page
     await page.reload();
 
-    // await page.pause();
-
     // Perform the login steps
     await page.getByRole('link', { name: 'Sign In' }).click();
     await page.getByRole('link', { name: 'Email / Password' }).click();
@@ -58,23 +53,21 @@ test('Profile Update', async () => {
     // Click "Unlock" button
     await metamaskPage.click('button:has-text("Unlock")');
 
-    // Wait for the account selection screen to appear
-    await metamaskPage.waitForSelector('.mm-box.mm-checkbox.mm-text.mm-text--body-md.mm-box--display-inline-flex.mm-box--align-items-center.mm-box--color-text-default');
+      // Wait for the account selection screen to appear
+  await metamaskPage.waitForSelector('.mm-box.mm-checkbox.mm-text.mm-text--body-md.mm-box--display-inline-flex.mm-box--align-items-center.mm-box--color-text-default');
 
-    // Get all account checkboxes
-    const checkboxes = await metamaskPage.$$('.mm-box.mm-checkbox.mm-text.mm-text--body-md.mm-box--display-inline-flex.mm-box--align-items-center.mm-box--color-text-default');
+  // Get all account checkboxes
+  const checkboxes = await metamaskPage.$$('.mm-box.mm-checkbox.mm-text.mm-text--body-md.mm-box--display-inline-flex.mm-box--align-items-center.mm-box--color-text-default');
 
-    // Click the first account checkbox
-    if (checkboxes.length > 0) {
-        await checkboxes[0].click();
-        console.log('Clicked on the first MetaMask account checkbox');
-    }
+  // Click the first account checkbox
+  if (checkboxes.length > 0) {
+      await checkboxes[0].click();
+  }
 
-    // Click the second account checkbox if it exists
-    if (checkboxes.length > 2) {
-        await checkboxes[2].click();
-        console.log('Clicked on the second MetaMask account checkbox');
-    }
+  // Click the second account checkbox if it exists
+  if (checkboxes.length > 2) {
+      await checkboxes[2].click();
+  }
 
     // Navigate to MetaMask connection confirmation
     await metamaskPage.click('button:has-text("Next")');
@@ -108,121 +101,92 @@ test('Profile Update', async () => {
     // Wait for a while before performing additional interactions
     await page.waitForTimeout(2000); // 2 seconds delay
 
-    // await page.pause();
+    await page.pause();
 
-    // Click to navigate to the profile section
-    await page.getByRole('button', { name: '0xfB8....719' }).click();
-    await page.getByRole('link', { name: 'Profile' }).click();
+    await page.getByRole('row').locator('svg').first().click();
 
-    await page.getByRole('img', { name: 'change profile button' }).click();
+    // Click the 'Add Energy' button
+    await page.getByRole('button', { name: 'Add Energy' }).click();
+    
+// Retrieve and verify the current value of 'Total $ENRG'
+const previousEnergyValue = await page.getByLabel('Total $ENRG').inputValue();
+console.log(`Previous $ENRG: ${previousEnergyValue}`);
 
-    // Randomly select and click one of the profile pictures
-    const randomPictureIndex = Math.floor(Math.random() * 9) + 2;
-    await page.locator(`div:nth-child(${randomPictureIndex}) > .size-\\[125px\\]`).click();
-    console.log(`Selected random profile picture: ${randomPictureIndex}`);
-    await page.getByRole('button', { name: 'Update profile' }).click();
+const newEnergyValue = parseInt(previousEnergyValue) + 5;
 
-    // Wait for a while before performing additional interactions
-    await page.waitForTimeout(2000); // 2 seconds delay
+// Fill the 'Total $ENRG' field with the new value
+await page.getByLabel('Total $ENRG').click();
+await page.getByLabel('Total $ENRG').fill(newEnergyValue.toString());
 
-    // Fill out profile details
-    await page.getByPlaceholder('Your display name').click();
-    await page.getByPlaceholder('Your display name').fill(randomName);
-    console.log(`Changed display name to: ${randomName}`);
+const enrgIncreasePerTask = await page.getByText('$ENRG Increase per task:').textContent();
+console.log(`${enrgIncreasePerTask}`);
 
-    // Fill out notification email
-    await page.getByPlaceholder('Your email address').click();
-    await page.getByPlaceholder('Setup a notification email').click();
-    await page.getByPlaceholder('Setup a notification email').fill('john.marvin.a.quino+87@gmail.com');
-    console.log('Filled out email address and setup notification');
+// Log the new value of 'Total $ENRG'
+console.log(`New Energy Value Set: ${newEnergyValue}`);
 
-    // Get the checkbox element
-    const sendNotificationsCheckbox = await page.getByLabel('Send email notifications');
+const totalEnrgIncrease = await page.getByText('Total $ENRG Increase:').textContent();
+console.log(`${totalEnrgIncrease}`);
 
-    // Check if the checkbox is currently checked
-    const isChecked = await sendNotificationsCheckbox.isChecked();
+// Verify the total energy for all completions
+const totalEnrgForCompletions = await page.getByRole('textbox').inputValue();
+console.log(`Total $ENRG for all completions: ${totalEnrgForCompletions}`);
 
-    // Perform tick if it's not already checked
-    if (!isChecked) {
-        await sendNotificationsCheckbox.check();
-        console.log('Checked "Send email notifications"');
+await page.getByRole('button', { name: 'Perform Change' }).click();
+    // Wait for Metamask login popup to appear
+    const [metamaskPage1] = await Promise.all([
+        browserContext.waitForEvent('page'),
+    ]);
+    
+    await metamaskPage1.waitForLoadState();
+    
+    // Ensure MetaMask popup is fully loaded
+    await metamaskPage1.waitForSelector('button:has-text("Next")');
+    
+    // Click "Next" button in MetaMask popup
+    await metamaskPage1.click('button:has-text("Next")');
+    
+    // Wait for "Approve" button to appear
+    await metamaskPage1.waitForSelector('button:has-text("Approve")');
+    
+    // Click "Approve" button in MetaMask popup
+    await metamaskPage1.click('button:has-text("Approve")');
+    
+    // Add a delay to allow MetaMask confirmation popup to appear
+    await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+    
+    // Wait for the second MetaMask popup to appear
+    const [metamaskPage2] = await Promise.all([
+        browserContext.waitForEvent('page'), // Wait for the second popup to be created
+    ]);
+    
+    await metamaskPage2.waitForLoadState();
+    
+    // Click "Confirm" button in MetaMask popup
+    await metamaskPage2.click('button:has-text("Confirm")');
+    
+    // Wait for the "Waiting" element to become visible
+    try {
+        await page.waitForSelector('text="Waiting for Contract Approval"', { visible: true, timeout: 60000 });
+        // Click on "Waiting" element if it appears
+        await page.click('text="Waiting for Contract Approval"');
+    } catch (error) {
+        console.error('Waiting for Contract Approval element not found within timeout.');
     }
+    
+    await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+    
+    // Wait for the text "Successfully Purchased $Enrg" to be visible with an extended timeout
+    try {
+        await page.waitForSelector('text="Deposit Complete"', { visible: true, timeout: 120000 });
+    } catch (error) {
+        console.error('Deposit Complete element not found within timeout.');
+    }
+    
+    console.log('Successfully added energy for completions.');
 
-    // Wait for a moment (optional)
-    await page.waitForTimeout(1000);
-
-    // Perform untick
-    await sendNotificationsCheckbox.uncheck();
-    console.log('Unchecked "Send email notifications"');
-
-    // Perform tick again
-    await sendNotificationsCheckbox.check();
-    console.log('Checked "Send email notifications" again');
-
-    // Click to open the country selection
-    await page.getByLabel('Your Country').click();
-    await page.getByPlaceholder('Search country...').click();
-
-    // Fetch all available country options
-    const countryOptions = await page.$$eval('[role="option"]', options => options.map(option => option.textContent));
-
-    // Select a random country from the list
-    const randomCountry = countryOptions[Math.floor(Math.random() * countryOptions.length)];
-
-    // Fill the search input with the random country and select it
-    await page.getByPlaceholder('Search country...').fill(randomCountry);
-    await page.getByRole('option', { name: randomCountry }).click();
-
-    console.log(`Selected ${randomCountry} as country`);
-
-    // Preferred Language selection between Filipino and English
-    const languages = ['Tagalog / Filipino', 'English'];
-    const selectedLanguage = languages[Math.floor(Math.random() * languages.length)];
-
-    await page.getByLabel('Preferred Language for').click();
-    await page.getByPlaceholder('Search language...').click();
-    await page.getByPlaceholder('Search language...').fill(selectedLanguage === 'Tagalog / Filipino' ? 'filip' : 'english');
-    await page.getByRole('option', { name: selectedLanguage }).click();
-    console.log(`Selected ${selectedLanguage} as preferred language`);
-
-    await page.getByPlaceholder('Tell us a little bit about').click();
-    await page.getByPlaceholder('Tell us a little bit about').fill('Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
-    console.log('Filled out bio');
-
-    // Click the button to save changes
-    await page.getByRole('button', { name: 'Save Changes' }).click();
-    console.log('Clicked "Save Changes"');
-
-    // Connect Discord
-    console.log('Connecting Discord...');
-    await page.getByRole('button', { name: 'Connect Discord' }).click();
-    await page.getByPlaceholder('Enter your handle').click();
-    await page.getByPlaceholder('Enter your handle').fill(randomName);
-    await page.getByRole('button', { name: 'Update' }).click();
+    // Click "Close" button
     await page.getByRole('button', { name: 'Close' }).click();
-    console.log('Discord handle updated and closed.');
-
-    // Connect Twitter
-    console.log('Connecting Twitter...');
-    await page.getByRole('button', { name: 'Connect X (Twitter)' }).click();
-    await page.getByPlaceholder('Enter your handle').click();
-    await page.getByPlaceholder('Enter your handle').fill(randomName);
-    await page.getByRole('button', { name: 'Update' }).click();
-    await page.getByRole('button', { name: 'Close' }).click();
-    console.log('Twitter handle updated and closed.');
-
-    // Connect LinkedIn
-    console.log('Connecting LinkedIn...');
-    await page.getByRole('button', { name: 'Connect Linkedin' }).click();
-    await page.getByPlaceholder('Enter your handle').click();
-    await page.getByPlaceholder('Enter your handle').fill(randomName);
-    await page.getByRole('button', { name: 'Update' }).click();
-    await page.getByRole('button', { name: 'Close' }).click();
-    console.log('LinkedIn handle updated and closed.');
-
-    // Wait for 30 seconds to ensure the changes are saved
-    await page.waitForTimeout(5000);
-
+    
     // Close the browser
     await browserContext.close();
 });

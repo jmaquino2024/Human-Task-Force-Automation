@@ -1,42 +1,7 @@
 const { test, chromium } = require('@playwright/test');
 const path = require('path');
 
-test('MetaMask Login/Sign In Using Meta', async () => {
-  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
-  const userDataDir = '/tmp/test-user-data-dir';
-
-  // Launch browser with MetaMask extension
-  const browserContext = await chromium.launchPersistentContext(userDataDir, {
-    headless: false,
-    args: [
-      `--disable-extensions-except=${pathToExtension}`,
-      `--load-extension=${pathToExtension}`
-    ],
-    viewport: null, // Set viewport to null to use the full screen size
-  });
-
-  // Use an existing page if available
-  const pages = browserContext.pages();
-  const page = pages.length > 0 ? pages[0] : await browserContext.newPage();
-
-    // Clear cache to mimic hard reload
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
-    await page.goto('about:blank'); // Navigate away to ensure the cache is cleared
-
-    // Navigate to the target URL
-    await page.goto('https://develop.humandao.org/');
-
-    await page.waitForTimeout(1000); // 1 second delay, adjust as needed
-
-    // Refresh the page if needed
-    await page.reload();
-
-  // // Set default timeout for all actions
-  // page.setDefaultTimeout(10000); // 10 seconds
-
-  // await page.pause()
-
+async function performLogin(page, browserContext) {
   // Perform the login steps
   await page.getByRole('link', { name: 'Sign In' }).click();
   await page.getByRole('link', { name: 'Email / Password' }).click();
@@ -46,7 +11,7 @@ test('MetaMask Login/Sign In Using Meta', async () => {
   // Wait for Metamask login popup to appear
   const [metamaskPage] = await Promise.all([
     browserContext.waitForEvent('page'),
-    await page.getByRole('button', { name: 'Metamask Metamask Connect to' }).click()
+    page.getByRole('button', { name: 'Metamask Metamask Connect to' }).click()
   ]);
 
   await metamaskPage.waitForLoadState();
@@ -72,10 +37,16 @@ test('MetaMask Login/Sign In Using Meta', async () => {
   if (checkboxes.length > 2) {
       await checkboxes[2].click();
   }
-  
+
   // Confirm the connection
   await metamaskPage.click('button:has-text("Next")'); 
   await metamaskPage.click('button:has-text("Confirm")');
+
+  // Wait for the MetaMask confirmation popup to close
+  await metamaskPage.waitForSelector('button:has-text("Confirm")', { state: 'detached' });
+
+  // Add a delay to ensure the popup is fully closed
+  await page.waitForTimeout(2000); // 2 second delay, adjust as needed
 
   // Set default timeout for all actions
   page.setDefaultTimeout(10000); // 10 seconds
@@ -92,36 +63,59 @@ test('MetaMask Login/Sign In Using Meta', async () => {
   // Click "Sign" button in MetaMask sign message popup
   await signMessagePage.waitForLoadState();
   await signMessagePage.click('button:has-text("Sign")');
-  
 
   // Wait for navigation to the dashboard URL
   await page.waitForURL('https://develop.humandao.org/app', { timeout: 60000 });
 
   console.log('Logged in successfully.');
+}
 
-  // Wait for a while before logging out
-  await page.waitForTimeout(3000); // 5 seconds delay
+test('Connecting Your Wallet', async () => {
+  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
+  const userDataDir = '/tmp/test-user-data-dir';
 
-  // Pause after navigating to the dashboard
-  // await page.pause();
-
- // Perform logout
- await page.getByRole('button', { name: '0xfB8....719' }).click();
- await page.getByRole('button', { name: 'Log out' }).click();
-
- console.log('Logged out successfully.');
-
- await page.waitForLoadState('load');
-
-  //  // Pause the script execution to inspect the final state
-  //  await page.pause();
-
-  // Wait for 30 seconds to ensure the changes are saved
-  await page.waitForTimeout(5000);
-
-   // Close the browser
-   await browserContext.close();
-
+  // Launch browser with MetaMask extension
+  const browserContext = await chromium.launchPersistentContext(userDataDir, {
+    headless: false,
+    args: [
+      `--disable-extensions-except=${pathToExtension}`,
+      `--load-extension=${pathToExtension}`
+    ],
+    viewport: null, // Set viewport to null to use the full screen size
   });
 
-  
+  // Use an existing page if available
+  const pages = browserContext.pages();
+  const page = pages.length > 0 ? pages[0] : await browserContext.newPage();
+
+  // Clear cache to mimic hard reload
+  await page.context().clearCookies();
+  await page.context().clearPermissions();
+  await page.goto('about:blank'); // Navigate away to ensure the cache is cleared
+
+  // Navigate to the target URL
+  await page.goto('https://develop.humandao.org/');
+
+  await page.waitForTimeout(1000); // 1 second delay, adjust as needed
+  await page.reload();
+
+  // Perform the login steps
+  await performLogin(page, browserContext);
+
+  // Wait for a while before logging out
+  await page.waitForTimeout(3000); // 3 seconds delay
+
+  // Perform logout
+  await page.getByRole('button', { name: '0xfB8....719' }).click();
+  await page.getByRole('button', { name: 'Log out' }).click();
+  console.log('Logged out successfully.');
+
+  // Wait for the next page to load completely
+  await page.waitForLoadState('load');
+
+  // Add a delay to view the next page before closing the browser
+  await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay (adjust as needed)
+
+  // Close the browser
+  await browserContext.close();
+});
