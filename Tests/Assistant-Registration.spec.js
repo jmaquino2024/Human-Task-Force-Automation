@@ -2,7 +2,7 @@ const { test, chromium } = require('@playwright/test');
 const path = require('path');
 
 test('Assistant-Registration', async () => {
-    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
     const userDataDir = '/tmp/test-user-data-dir';
 
     // Generate a random name

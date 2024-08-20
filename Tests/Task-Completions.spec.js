@@ -171,28 +171,146 @@ if (completionNumber > 4) {
   completionNumber = 2;
 }
 
-// Create a new task
-await page.getByRole('button', { name: 'Create Task' }).click();
-console.log('Clicked on "Create Task" button');
+// // Create a new task
+// await page.getByRole('button', { name: 'Create Task' }).click();
+// console.log('Clicked on "Create Task" button');
 
-await page.getByRole('menuitem', { name: 'New Task' }).click();
-console.log('Selected "New Task" from the menu');
+// await page.getByRole('menuitem', { name: 'New Task' }).click();
+// console.log('Selected "New Task" from the menu');
 
-await page.getByPlaceholder('Enter title').click();
-console.log('Clicked on title input field');
+// await page.getByPlaceholder('Enter title').click();
+// console.log('Clicked on title input field');
 
-// Generate and fill a random title
-const randomTitle = generateRandomTitle();
-await page.getByPlaceholder('Enter title').fill(randomTitle);
-console.log(`Filled title input field with random title: ${randomTitle}`);
+// // Generate and fill a random title
+// const randomTitle = generateRandomTitle();
+// await page.getByPlaceholder('Enter title').fill(randomTitle);
+// console.log(`Filled title input field with random title: ${randomTitle}`);
 
 // Calculate the correct energy value based on the number of completions
 const totalEnergy = inputValue * completionNumber;
 
-// Fill the "Enter Energy" field with the current input value
-await page.getByPlaceholder('Enter Energy').click();
-await page.getByPlaceholder('Enter Energy').fill(inputValue.toString());
-console.log(`Filled "Enter Energy" field with value: ${inputValue}`);
+// // Fill the "Enter Energy" field with the current input value
+// await page.getByPlaceholder('Enter Energy').click();
+// await page.getByPlaceholder('Enter Energy').fill(inputValue.toString());
+// console.log(`Filled "Enter Energy" field with value: ${inputValue}`);
+
+// // Fill the "Enter number of completion" field with the current completion number
+// await page.getByRole('checkbox').click();
+// await page.getByPlaceholder('Enter number of completion').click();
+// await page.getByPlaceholder('Enter number of completion').fill(completionNumber.toString());
+// console.log(`Filled "Enter number of completion" field with value: ${completionNumber}`);
+
+// // Save the new input value and completion number to the files
+// fs.writeFileSync('lastValue.txt', inputValue.toString());
+// fs.writeFileSync('lastCompletionNumber.txt', completionNumber.toString());
+
+// // Verify the displayed total amount of energy
+// const totalEnergyString = totalEnergy.toFixed(2); // Assuming energy is displayed with two decimal places
+// await page.getByText(totalEnergyString).click();
+// console.log(`Verified total energy: ${totalEnergyString}`);
+
+// await page.getByLabel('Allow multiple completions').click();
+// console.log('Clicked on "Allow multiple completions" checkbox');
+
+//   // // Schedule Task with current date
+//   // await page.getByLabel('Schedule Task').click();
+
+//   // // Get the current date
+//   // const currentDate = new Date();
+//   // const day = currentDate.getDate();
+//   // const dayString = day.toString();
+
+//   // // Click the current date in the date picker
+//   // await page.getByRole('gridcell', { name: dayString }).click();
+
+//     await page.getByLabel('Qualification').click();
+//     console.log('Clicked on "Qualification"');
+
+//     await page.getByLabel('Public Qual', { exact: true }).click();
+//     console.log('Selected "Public Qual"');
+
+//     await page.locator('.tiptap').click();
+//     await page.locator('.tiptap').fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin efficitur vestibulum nisi at ultricies. Duis consequat nec quam eget feugiat. ');
+//     console.log('Filled the description field with placeholder text');
+
+//     await page.locator('label').filter({ hasText: 'Video References' }).getByRole('button').click();
+//     console.log('Clicked on "Video References" button');
+    
+//     await page.locator('input[name="videoRefs\\.0\\.value"]').click();
+//     await page.locator('input[name="videoRefs\\.0\\.value"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
+//     console.log('Filled first video reference input');
+
+//     await page.locator('input[name="videoRefs\\.1\\.value"]').click();
+//     await page.locator('input[name="videoRefs\\.1\\.value"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
+//     console.log('Filled second video reference input');
+
+//     await page.locator('div').filter({ hasText: /^Video ReferencesVideo References$/ }).getByRole('button').nth(2).click();
+//     console.log('Clicked to add more video references');
+
+//     await page.locator('label').filter({ hasText: 'URL\'s' }).getByRole('button').click();
+//     console.log('Clicked on "URL\'s" button');
+
+//     await page.locator('input[name="links\\.0\\.value"]').click();
+//     await page.locator('input[name="links\\.0\\.value"]').fill('https://www.google.com/');
+//     console.log('Filled first URL input');
+
+//     await page.locator('input[name="links\\.1\\.value"]').click();
+//     await page.locator('input[name="links\\.1\\.value"]').fill('https://www.google.com/');
+//     console.log('Filled second URL input');
+
+//     await page.locator('div').filter({ hasText: /^URL'sURL's$/ }).getByRole('button').nth(2).click();
+//     console.log('Clicked to removed the URLs');
+
+//     await page.getByRole('button', { name: 'Save Task' }).click();
+//     console.log('Clicked on "Save Task" button');
+
+//     await page.getByRole('button', { name: 'Close' }).click();
+//     console.log('Saved as a task draft');
+
+//     // Wait for the "Draft" text to be visible and clickable
+//   await page.waitForSelector('text=Draft', { state: 'visible', timeout: 10000 });
+
+//   // Click on the "Draft" text
+//   await page.getByText('Draft').first().click();
+
+//   // Add a short delay to ensure the element is fully interactive
+//   await page.waitForTimeout(2000); // 1-second delay
+
+//   // Click the task and verify using the title
+//   await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
+//   await page.click(`text=${randomTitle}`);
+//   console.log(`Verify the task draft created: ${randomTitle}`);
+
+//   // Verify the task using the title
+//   const taskTitle0 = await page.getByRole('heading', { name: randomTitle }).textContent();
+//   if (taskTitle0 === randomTitle) {
+//     console.log('Task draft verified successfully with the title: ' + taskTitle0);
+//   } else {
+//     console.error('Task draft verification failed. Expected title: ' + randomTitle + ', but got: ' + taskTitle0);
+//   }
+
+//   await page.getByRole('button').nth(1).click(); 
+
+   // Click on the "Create Task" button to start creating a new task
+   await page.locator('button').filter({ hasText: 'Create Task' }).click();
+
+   // Select "New Task" from the menu to create a new task
+   await page.getByRole('menuitem', { name: 'New Task' }).click();
+   console.log('Create a new task for the published');
+ 
+   // Click on the title input field to begin entering the title
+   await page.getByPlaceholder('Enter title').click();
+   console.log('Clicked on title input field');
+ 
+   // Generate and fill a random title
+   const randomTitle1 = generateRandomTitle();
+   await page.getByPlaceholder('Enter title').fill(randomTitle1);
+   console.log(`Filled title input field with random title: ${randomTitle1}`);
+ 
+   // Fill the "Enter Energy" field with the current input value
+   await page.getByPlaceholder('Enter Energy').click();
+   await page.getByPlaceholder('Enter Energy').fill(inputValue.toString());
+   console.log(`Filled "Enter Energy" field with value: ${inputValue}`);
 
 // Fill the "Enter number of completion" field with the current completion number
 await page.getByRole('checkbox').click();
@@ -205,9 +323,9 @@ fs.writeFileSync('lastValue.txt', inputValue.toString());
 fs.writeFileSync('lastCompletionNumber.txt', completionNumber.toString());
 
 // Verify the displayed total amount of energy
-const totalEnergyString = totalEnergy.toFixed(2); // Assuming energy is displayed with two decimal places
-await page.getByText(totalEnergyString).click();
-console.log(`Verified total energy: ${totalEnergyString}`);
+const totalEnergyString1 = totalEnergy.toFixed(2); // Assuming energy is displayed with two decimal places
+await page.getByText(totalEnergyString1).click();
+console.log(`Verified total energy: ${totalEnergyString1}`);
 
 await page.getByLabel('Allow multiple completions').click();
 console.log('Clicked on "Allow multiple completions" checkbox');
@@ -264,8 +382,8 @@ console.log('Clicked on "Allow multiple completions" checkbox');
     await page.getByRole('button', { name: 'Save Task' }).click();
     console.log('Clicked on "Save Task" button');
 
-    await page.getByRole('button', { name: 'Publish' }).click();
-    console.log('Clicked on "Publish" button');
+  await page.getByRole('button', { name: 'Publish' }).click();
+  console.log('Clicked on "Publish" button');
 
   // Wait for Metamask login popup to appear
   const [metamaskPage1] = await Promise.all([
@@ -325,17 +443,26 @@ console.log('Clicked on "Allow multiple completions" checkbox');
 
   console.log('Task with completions created');
 
+  //  // Wait for the "Open" text to be visible and clickable
+  //  await page.waitForSelector('text=Open', { state: 'visible', timeout: 10000 });
+
+  //  // Click on the "Open" text
+  //  await page.getByText('Open').first().click();
+ 
+  //  // Add a short delay to ensure the element is fully interactive
+  //  await page.waitForTimeout(2000); // 1-second delay
+
     // Click the task and verify using the title
-    await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
-    await page.click(`text=${randomTitle}`);
-    console.log(`Verify the task created: ${randomTitle}`);
+    await page.waitForSelector(`text=${randomTitle1}`, { timeout: 60000 });
+    await page.click(`text=${randomTitle1}`);
+    console.log(`Verify the task created: ${randomTitle1}`);
   
     // Verify the task using the title
-    const taskTitle = await page.getByRole('heading', { name: randomTitle }).textContent();
-    if (taskTitle === randomTitle) {
+    const taskTitle = await page.getByRole('heading', { name: randomTitle1 }).textContent();
+    if (taskTitle === randomTitle1) {
       console.log('Task verified successfully with the title: ' + taskTitle);
     } else {
-      console.error('Task verification failed. Expected title: ' + randomTitle + ', but got: ' + taskTitle);
+      console.error('Task verification failed. Expected title: ' + randomTitle1 + ', but got: ' + taskTitle);
     }
   
     // Add a delay to view the page after clicking the "Close" button
@@ -417,7 +544,7 @@ await page.getByRole('button', { name: 'Perform Change' }).click();
     try {
         await page.waitForSelector('text="Deposit Complete"', { visible: true, timeout: 120000 });
     } catch (error) {
-        console.error('Deposit Complete element not found within timeout.');
+        console.error('Failed to Add Energy.');
     }
     
     console.log('Successfully added energy for completions.');

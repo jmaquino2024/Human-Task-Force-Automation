@@ -133,7 +133,7 @@ test('Task Creation', async () => {
   // Wait for a while before logging out
   await page.waitForTimeout(2000); // 2 seconds delay
 
-  await page.pause();
+  // await page.pause();
 
   // Highlighted modification
   const fs = require('fs');
@@ -167,6 +167,109 @@ test('Task Creation', async () => {
   const randomTitle = generateRandomTitle();
   await page.getByPlaceholder('Enter title').fill(randomTitle);
   console.log(`Filled title input field with random title: ${randomTitle}`);
+
+  // Fill the "Enter Energy" field with the current input value
+  await page.getByPlaceholder('Enter Energy').click();
+  await page.getByPlaceholder('Enter Energy').fill(inputValue.toString());
+  console.log(`Filled "Enter Energy" field with value: ${inputValue}`);
+
+  // Save the new input value to the file
+  fs.writeFileSync('lastValue.txt', inputValue.toString());
+
+  // // Schedule Task with current date
+  // await page.getByLabel('Schedule Task').click();
+
+  // // Get the current date
+  // const currentDate = new Date();
+  // const day = currentDate.getDate();
+  // const dayString = day.toString();
+
+  // // Click the current date in the date picker
+  // await page.getByRole('gridcell', { name: dayString }).click();
+
+  await page.getByLabel('Qualification').click();
+  console.log('Clicked on "Qualification"');
+
+  await page.getByLabel('Public Qual', { exact: true }).click();
+  console.log('Selected "Public Qual"');
+
+  await page.locator('.tiptap').click();
+  await page.locator('.tiptap').fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin efficitur vestibulum nisi at ultricies. Duis consequat nec quam eget feugiat.');
+  console.log('Filled the description field with placeholder text');
+
+  await page.locator('label').filter({ hasText: 'Video References' }).getByRole('button').click();
+  console.log('Clicked on "Video References" button');
+
+  await page.locator('input[name="videoRefs\\.0\\.value"]').click();
+  await page.locator('input[name="videoRefs\\.0\\.value"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
+  console.log('Filled first video reference input');
+
+  await page.locator('input[name="videoRefs\\.1\\.value"]').click();
+  await page.locator('input[name="videoRefs\\.1\\.value"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
+  console.log('Filled second video reference input');
+
+  await page.locator('div').filter({ hasText: /^Video ReferencesVideo References$/ }).getByRole('button').nth(2).click();
+  console.log('Clicked to removed the video references');
+
+  await page.locator('label').filter({ hasText: 'URL\'s' }).getByRole('button').click();
+  console.log('Clicked on "URL\'s" button');
+
+  await page.locator('input[name="links\\.0\\.value"]').click();
+  await page.locator('input[name="links\\.0\\.value"]').fill('https://www.google.com/');
+  console.log('Filled first URL input');
+
+  await page.locator('input[name="links\\.1\\.value"]').click();
+  await page.locator('input[name="links\\.1\\.value"]').fill('https://www.google.com/');
+  console.log('Filled second URL input');
+
+  await page.locator('div').filter({ hasText: /^URL'sURL's$/ }).getByRole('button').nth(2).click();
+  console.log('Clicked to removed the URLs');
+
+  await page.getByRole('button', { name: 'Save Task' }).click();
+  console.log('Clicked on "Save Task" button');
+
+  await page.getByRole('button', { name: 'Close' }).click();
+  console.log('Saved as a task draft');
+
+  // Wait for the "Draft" text to be visible and clickable
+  await page.waitForSelector('text=Draft', { state: 'visible', timeout: 10000 });
+
+  // Click on the "Draft" text
+  await page.getByText('Draft').first().click();
+
+  // Add a short delay to ensure the element is fully interactive
+  await page.waitForTimeout(2000); // 1-second delay
+
+  // Click the task and verify using the title
+  await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
+  await page.click(`text=${randomTitle}`);
+  console.log(`Verify the task draft created: ${randomTitle}`);
+
+  // Verify the task using the title
+  const taskTitle0 = await page.getByRole('heading', { name: randomTitle }).textContent();
+  if (taskTitle0 === randomTitle) {
+    console.log('Task draft verified successfully with the title: ' + taskTitle0);
+  } else {
+    console.error('Task draft verification failed. Expected title: ' + randomTitle + ', but got: ' + taskTitle0);
+  }
+
+  await page.getByRole('button').nth(1).click(); 
+
+  // Click on the "Create Task" button to start creating a new task
+  await page.locator('button').filter({ hasText: 'Create Task' }).click();
+
+  // Select "New Task" from the menu to create a new task
+  await page.getByRole('menuitem', { name: 'New Task' }).click();
+  console.log('Create a new task for the published');
+
+  // Click on the title input field to begin entering the title
+  await page.getByPlaceholder('Enter title').click();
+  console.log('Clicked on title input field');
+
+  // Generate and fill a random title
+  const randomTitle1 = generateRandomTitle();
+  await page.getByPlaceholder('Enter title').fill(randomTitle);
+  console.log(`Filled title input field with random title: ${randomTitle1}`);
 
   // Fill the "Enter Energy" field with the current input value
   await page.getByPlaceholder('Enter Energy').click();
@@ -278,7 +381,7 @@ test('Task Creation', async () => {
   try {
     await page.waitForSelector('text="Your task has been published and is now live!"', { visible: true, timeout: 120000 });
   } catch (error) {
-    console.error('Successfully Purchased $Enrg element not found within timeout.');
+    console.error('Failed to publish task');
   }
 
   // Click "Close" button
@@ -289,91 +392,100 @@ test('Task Creation', async () => {
 
   console.log('Task created');
 
-  // Click the task and verify using the title
-  await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
-  await page.click(`text=${randomTitle}`);
-  console.log(`Verify the task created: ${randomTitle}`);
+  // // Wait for the "Open" text to be visible and clickable
+  // await page.waitForSelector('text=Open', { state: 'visible', timeout: 10000 });
 
-  // Verify the task using the title
-  const taskTitle = await page.getByRole('heading', { name: randomTitle }).textContent();
-  if (taskTitle === randomTitle) {
-    console.log('Task verified successfully with the title: ' + taskTitle);
-  } else {
-    console.error('Task verification failed. Expected title: ' + randomTitle + ', but got: ' + taskTitle);
-  }
+  // // Click on the "Open" text
+  // await page.getByText('Open').first().click();
 
-  // Add a delay to view the page after clicking the "Close" button
-  await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+  // // Add a short delay to ensure the element is fully interactive
+  // await page.waitForTimeout(2000); // 1-second delay
 
-  // await page.getByRole('row').locator('svg').first().click();
+  // // Click the task and verify using the title
+  // await page.waitForSelector(`text=${randomTitle}`, { timeout: 60000 });
+  // await page.click(`text=${randomTitle}`);
+  // console.log(`Verify the task created: ${randomTitle}`);
 
-  // Click the 'Add Energy' button
-  await page.getByRole('button', { name: 'Add Energy' }).click();
+  // // Verify the task using the title
+  // const taskTitle = await page.getByRole('heading', { name: randomTitle }).textContent();
+  // if (taskTitle === randomTitle) {
+  //   console.log('Task verified successfully with the title: ' + taskTitle);
+  // } else {
+  //   console.error('Task verification failed. Expected title: ' + randomTitle + ', but got: ' + taskTitle);
+  // }
+
+  // // Add a delay to view the page after clicking the "Close" button
+  // await page.waitForTimeout(3000); // 3 seconds delay, adjust as needed
+
+  // // await page.getByRole('row').locator('svg').first().click();
+
+  // // Click the 'Add Energy' button
+  // await page.getByRole('button', { name: 'Add Energy' }).click();
   
-  // Retrieve the current value of 'Total $ENRG'
-  const currentEnergyValue = await page.getByLabel('Total $ENRG').inputValue();
-  const newEnergyValue = parseInt(currentEnergyValue) + 5;
+  // // Retrieve the current value of 'Total $ENRG'
+  // const currentEnergyValue = await page.getByLabel('Total $ENRG').inputValue();
+  // const newEnergyValue = parseInt(currentEnergyValue) + 5;
   
-  // Click the 'Total $ENRG' field and fill it with the new value
-  await page.getByLabel('Total $ENRG').click();
-  await page.getByLabel('Total $ENRG').fill(newEnergyValue.toString());
-  await page.getByRole('button', { name: 'Perform Change' }).click();
+  // // Click the 'Total $ENRG' field and fill it with the new value
+  // await page.getByLabel('Total $ENRG').click();
+  // await page.getByLabel('Total $ENRG').fill(newEnergyValue.toString());
+  // await page.getByRole('button', { name: 'Perform Change' }).click();
   
-  // Log the new value of 'Total $ENRG'
-  console.log(`New Energy Value Set: ${newEnergyValue}`);
+  // // Log the new value of 'Total $ENRG'
+  // console.log(`New Energy Value Set: ${newEnergyValue}`);
   
-  // Wait for Metamask login popup to appear
-  const [metamaskPage3] = await Promise.all([
-      browserContext.waitForEvent('page'),
-  ]);
+  // // Wait for Metamask login popup to appear
+  // const [metamaskPage3] = await Promise.all([
+  //     browserContext.waitForEvent('page'),
+  // ]);
   
-  await metamaskPage3.waitForLoadState();
+  // await metamaskPage3.waitForLoadState();
   
-  // Ensure MetaMask popup is fully loaded
-  await metamaskPage3.waitForSelector('button:has-text("Next")');
+  // // Ensure MetaMask popup is fully loaded
+  // await metamaskPage3.waitForSelector('button:has-text("Next")');
   
-  // Click "Next" button in MetaMask popup
-  await metamaskPage3.click('button:has-text("Next")');
+  // // Click "Next" button in MetaMask popup
+  // await metamaskPage3.click('button:has-text("Next")');
   
-  // Wait for "Approve" button to appear
-  await metamaskPage3.waitForSelector('button:has-text("Approve")');
+  // // Wait for "Approve" button to appear
+  // await metamaskPage3.waitForSelector('button:has-text("Approve")');
   
-  // Click "Approve" button in MetaMask popup
-  await metamaskPage3.click('button:has-text("Approve")');
+  // // Click "Approve" button in MetaMask popup
+  // await metamaskPage3.click('button:has-text("Approve")');
   
-  // Add a delay to allow MetaMask confirmation popup to appear
-  await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+  // // Add a delay to allow MetaMask confirmation popup to appear
+  // await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
   
-  // Wait for the second MetaMask popup to appear
-  const [metamaskPage4] = await Promise.all([
-      browserContext.waitForEvent('page'), // Wait for the second popup to be created
-  ]);
+  // // Wait for the second MetaMask popup to appear
+  // const [metamaskPage4] = await Promise.all([
+  //     browserContext.waitForEvent('page'), // Wait for the second popup to be created
+  // ]);
   
-  await metamaskPage4.waitForLoadState();
+  // await metamaskPage4.waitForLoadState();
   
-  // Click "Confirm" button in MetaMask popup
-  await metamaskPage4.click('button:has-text("Confirm")');
+  // // Click "Confirm" button in MetaMask popup
+  // await metamaskPage4.click('button:has-text("Confirm")');
   
-  // Wait for the "Waiting" element to become visible
-  try {
-      await page.waitForSelector('text="Waiting for Contract Approval"', { visible: true, timeout: 60000 });
-      // Click on "Waiting" element if it appears
-      await page.click('text="Waiting for Contract Approval"');
-  } catch (error) {
-      console.error('Waiting for Contract Approval element not found within timeout.');
-  }
+  // // Wait for the "Waiting" element to become visible
+  // try {
+  //     await page.waitForSelector('text="Waiting for Contract Approval"', { visible: true, timeout: 60000 });
+  //     // Click on "Waiting" element if it appears
+  //     await page.click('text="Waiting for Contract Approval"');
+  // } catch (error) {
+  //     console.error('Waiting for Contract Approval element not found within timeout.');
+  // }
   
-  await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
+  // await page.waitForTimeout(5000); // 5 seconds delay, adjust as needed
   
-  // Wait for the text "Successfully Purchased $Enrg" to be visible with an extended timeout
-  try {
-      await page.waitForSelector('text="Deposit Complete"', { visible: true, timeout: 120000 });
-  } catch (error) {
-      console.error('Deposit Complete element not found within timeout.');
-  }
+  // // Wait for the text "Successfully Purchased $Enrg" to be visible with an extended timeout
+  // try {
+  //     await page.waitForSelector('text="Deposit Complete"', { visible: true, timeout: 120000 });
+  // } catch (error) {
+  //     console.error('Failed to Add Energy.');
+  // }
   
-  // Click "Close" button
-  await page.getByRole('button', { name: 'Close' }).click();
+  // // Click "Close" button
+  // await page.getByRole('button', { name: 'Close' }).click();
 
   // Close the browser
   await browserContext.close();

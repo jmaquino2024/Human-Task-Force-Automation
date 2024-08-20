@@ -3,7 +3,7 @@ const path = require('path');
 const moment = require('moment');
 
 test('Assistant - Task Acceptance', async () => {
-    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
     const userDataDir = '/tmp/test-user-data-dir';
 
     // Launch browser with MetaMask extension
@@ -32,8 +32,6 @@ test('Assistant - Task Acceptance', async () => {
 
     // Reload the page
     await page.reload();
-
-    // await page.pause();
 
     // Perform the login steps
     await page.getByRole('link', { name: 'Sign In' }).click();
@@ -87,12 +85,12 @@ test('Assistant - Task Acceptance', async () => {
     // Wait for a while before performing additional interactions
     await page.waitForTimeout(2000); // 2 seconds delay
 
-    await page.pause();
+    // await page.pause();
 
     async function processTask(page) {
         // Calculate today's date
         const todayDate = moment().format('MMMM D, YYYY'); // Adjust the format to match your application's date format
-
+    
         // Click the "Active" button
         await page.locator('div').filter({ hasText: /^Active$/ }).getByRole('button').click();
         
@@ -128,12 +126,26 @@ test('Assistant - Task Acceptance', async () => {
                 } else {
                     console.error('Accept button is not visible or enabled.');
                 }
+            } else {
+                // If no current date found, check for the "You have viewed all tasks" text
+                try {
+                    if (await page.getByText('You have viewed all tasks').isVisible()) {
+                        await page.getByText('You have viewed all tasks').click();
+                        await page.getByRole('button', { name: 'Return to Dashboard' }).click();
+                        console.log('Clicked "Return to Dashboard" button');
+                        await page.locator('div').filter({ hasText: /^Active$/ }).getByRole('button').click();
+                        attempts = 0; // Reset attempts after returning to dashboard
+                    }
+                } catch (e) {
+                    // If the text is not found, continue with the next iteration
+                    console.log('No "You have viewed all tasks" message found.');
+                }
             }
         }
     }
     
     // Usage
-    await processTask(page);    
+    await processTask(page);
 
     // Wait for the second MetaMask popup to appear
     const [metamaskPage2] = await Promise.all([
@@ -176,8 +188,8 @@ test('Assistant - Task Acceptance', async () => {
 });
 
 
-test.only('Assistant - Task Completion', async () => {
-    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+test('Assistant - Task Completion', async () => {
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
     const userDataDir = '/tmp/test-user-data-dir';
     
         // Generate a random name
@@ -270,7 +282,7 @@ test.only('Assistant - Task Completion', async () => {
     // Wait for a while before performing additional interactions
     await page.waitForTimeout(2000); // 2 seconds delay
     
-    await page.pause();
+    // await page.pause();
 
 // Click the element with specified classes
 await page.locator('td:nth-child(6)').first().click();
@@ -301,8 +313,8 @@ await page.locator('input[name="videoRefs\\.1\\.value"]').click();
 await page.locator('input[name="videoRefs\\.1\\.value"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
 console.log('Filled video reference 1.');
 
-await page.locator('[id="\\:rt\\:-form-item"]').click();
-await page.locator('[id="\\:rt\\:-form-item"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
+await page.locator('input[name="videoRefs\\.0\\.value"]').click();
+await page.locator('input[name="videoRefs\\.0\\.value"]').fill('https://www.youtube.com/watch?v=8oFEp-_iT98&t=2s');
 console.log('Filled additional video reference.');
 
 // Click to proceed in the video references section
@@ -330,8 +342,8 @@ await page.locator('input[name="links\\.1\\.value"]').click();
 await page.locator('input[name="links\\.1\\.value"]').fill('https://www.google.com/');
 console.log('Filled link 1.');
 
-await page.locator('[id="\\:ru\\:-form-item"]').click();
-await page.locator('[id="\\:ru\\:-form-item"]').fill('https://www.google.com/');
+await page.locator('input[name="links\\.0\\.value"]').click();
+await page.locator('input[name="links\\.0\\.value"]').fill('https://www.google.com/');
 console.log('Filled additional link.');
 
 // Click to proceed in the links section
@@ -361,21 +373,19 @@ console.log('Switched back to the "Task" tab.');
 
 // Submit the task for approval
 await page.getByRole('button', { name: 'Submit for Approval' }).click();
+await page.getByRole('button', { name: 'Close' }).click();
 await page.getByRole('button').nth(1).click();
 console.log('Submitted the task for approval.');
 
-// // Reload the page
-// await page.reload();
+// // Click 'For Review' button
+// await page.getByText('For Review').first().click();
+// await page.getByText('For Review').first().click();
+// console.log('Clicked on "Draft"');
 
-// Click 'For Review' button
-await page.getByText('For Review').first().click();
-await page.getByText('For Review').first().click();
-console.log('Clicked on "Draft"');
-
-// Click the specified element again
-await page.locator('.rounded-xl.hover\\:bg-black\\/15.cursor-pointer.ease-in-out.duration-500.z-10').click();
-await page.locator('.rounded-xl.hover\\:bg-black\\/15.cursor-pointer.ease-in-out.duration-500.z-10').getByText('Review').click();
-console.log('Clicked the specified element again and selected "Review".');
+// // Click the specified element again
+// await page.locator('.rounded-xl.hover\\:bg-black\\/15.cursor-pointer.ease-in-out.duration-500.z-10').click();
+// await page.locator('.rounded-xl.hover\\:bg-black\\/15.cursor-pointer.ease-in-out.duration-500.z-10').getByText('Review').click();
+// console.log('Clicked the specified element again and selected "Review".');
 
 // Close the browser
 await browserContext.close();

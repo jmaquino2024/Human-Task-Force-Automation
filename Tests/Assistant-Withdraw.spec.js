@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs'); // Ensure fs is imported
 
 test('Assistant - Assets-Withdraw', async () => {
-    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
     const userDataDir = '/tmp/test-user-data-dir';
   
     // Launch browser with MetaMask extension and set slowMo

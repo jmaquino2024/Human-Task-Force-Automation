@@ -222,7 +222,7 @@ test('Profile Update', async () => {
 
   await page.waitForLoadState('load');
 
-  await page.pause();
+  // await page.pause();
 
   // Click to navigate to the profile section
   await page.getByRole('button', { name: '0xfB8....719' }).click();
@@ -449,7 +449,7 @@ test.only('Dashboard Functionality', async () => {
   // Wait for a while before performing additional interactions
   await page.waitForTimeout(2000); // 2 seconds delay
 
-  await page.pause();
+  // await page.pause();
   
   // Click the fifth available cell
   await page.locator('role=cell').nth(6).click();  // Indexing starts from 0

@@ -2,11 +2,8 @@ const { test, chromium } = require('@playwright/test');
 const path = require('path');
 
 test('Assistant - Profile update', async () => {
-    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.14_0');
+    const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
     const userDataDir = '/tmp/test-user-data-dir';
-
-    // Generate a random name
-    const randomName = 'User' + Math.floor(Math.random() * 10000);
 
     // Launch browser with MetaMask extension
     const browserContext = await chromium.launchPersistentContext(userDataDir, {
