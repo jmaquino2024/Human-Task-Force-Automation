@@ -21,7 +21,7 @@ jobs:
     - name: Download MetaMask Extension
       run: |
         mkdir metamask
-        curl -L -o metamask.zip https://github.com/MetaMask/metamask-extension/releases/download/v10.28.0/metamask-chrome-v10.28.0.zip
+        curl -L -o metamask.zip https://github.com/MetaMask/metamask-extension/releases/download/12.6.0/metamask-chrome-12.0.6.zip
         unzip metamask.zip -d metamask
 
     - name: Run tests with Playwright
