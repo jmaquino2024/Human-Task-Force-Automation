@@ -36,7 +36,7 @@ function generateRandomTitle() {
 }
 
 test('Task Creation', async () => {
-  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
+  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '12.0.5_2');
   const userDataDir = '/tmp/test-user-data-dir';
 
   // Launch browser with MetaMask extension and set slowMo
@@ -293,8 +293,8 @@ test('Task Creation', async () => {
   await page.getByLabel('Qualification').click();
   console.log('Clicked on "Qualification"');
 
-  await page.getByLabel('Public Qual', { exact: true }).click();
-  console.log('Selected "Public Qual"');
+  await page.getByLabel('hello', { exact: true }).click();
+  console.log('Selected "hello"');
 
   await page.locator('.tiptap').click();
   await page.locator('.tiptap').fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin efficitur vestibulum nisi at ultricies. Duis consequat nec quam eget feugiat.');

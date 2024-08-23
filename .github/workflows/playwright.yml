@@ -1,26 +1,32 @@
-name: Playwright Tests
+name: Playwright Tests with MetaMask
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: windows-latest
+
     steps:
-    - uses: actions/checkout@v4
-      with:
-        node-version: lts/*
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test ./Tests/example.spec.js --headed
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      run: npm install
+
+    - name: Download MetaMask Extension
+      run: |
+        mkdir metamask
+        curl -L -o metamask.zip https://github.com/MetaMask/metamask-extension/releases/download/v10.28.0/metamask-chrome-v10.28.0.zip
+        unzip metamask.zip -d metamask
+
+    - name: Run tests with Playwright
+      run: |
+        npx playwright install
+        npx playwright test ./Tests/example.spec.js --headed
+      env:
+        METAMASK_PATH: ${{ github.workspace }}/metamask

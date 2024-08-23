@@ -1,8 +1,8 @@
 const { test, chromium } = require('@playwright/test');
 const path = require('path');
 
-test.only('Accept Submission', async () => {
-  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
+test('Accept Submission', async () => {
+  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '12.0.5_2');
   const userDataDir = '/tmp/test-user-data-dir';
 
   // Launch browser with MetaMask extension and set slowMo
@@ -177,8 +177,8 @@ try {
   
 });
 
-test.only('Reject functionality', async () => {
-  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
+test('Reject functionality', async () => {
+  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '12.0.5_2');
   const userDataDir = '/tmp/test-user-data-dir';
 
   // Launch browser with MetaMask extension and set slowMo
@@ -279,54 +279,112 @@ test.only('Reject functionality', async () => {
 
   await page.pause();
   
-  await page.locator('div').filter({ hasText: /^Your TasksCreate Task$/ }).getByRole('button').first().click();
-  await page.getByRole('menuitem', { name: 'Clarification' }).click();
-  await page.getByRole('menuitem', { name: 'Published' }).click();
-  await page.getByRole('menuitem', { name: 'Active' }).click();
-  await page.getByRole('menuitem', { name: 'Active' }).press('Escape');
-  await page.waitForTimeout(3000); // 3-second delay before proceeding to the next command
-  console.log('Selected the "Review" filter from the list of filters');
+ // Perform actions on the page
+ await page.locator('div').filter({ hasText: /^Your TasksCreate Task$/ }).getByRole('button').first().click();
+ await page.getByRole('menuitem', { name: 'Clarification' }).click();
+ await page.getByRole('menuitem', { name: 'Published' }).click();
+ await page.getByRole('menuitem', { name: 'Active' }).click();
+ await page.getByRole('menuitem', { name: 'Active' }).press('Escape');
+ await page.waitForTimeout(3000); // 3-second delay before proceeding to the next command
+ console.log('Selected the "Review" filter from the list of filters');
 
-  await page.locator('td:nth-child(4)').first().click();
-  await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay to see the Review step
-  console.log('Selected the first row from the review task list.');
-  
+ await page.locator('td:nth-child(4)').first().click();
+ await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay to see the Review step
+ console.log('Selected the first row from the review task list.');
+
+  // Get the heading text dynamically
+  const headingText = await page.getByRole('heading').textContent();
+
+  // Log the heading text to verify what it is
+  console.log(`Heading found: ${headingText}`);
+
+  // Verify if the heading text is correct
+  if (headingText && headingText.trim() !== '') {
+      console.log(`Verified: The heading "${headingText}" is visible.`);
+  } else {
+      console.error('Failed to verify: No heading text found.');
+      return; // Stop execution if the heading is not found
+  }
+
+  // Continue with the original actions after verification
+  await page.getByRole('heading', { name: headingText.trim() }).click();
+
   await page.getByRole('button', { name: 'Request New Assistant' }).click();
   await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay to see the Request New Assistant step
-  console.log('Clicked the "Request New Assistant"');
+  console.log('Clicked the "Request New Assistant".');
 
   await page.getByRole('button', { name: 'Reassign Task' }).click();
   await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay to see the Reassign Task step
 
-  await page.getByText('Task is now pending to be').click();
+  // Wait for the 'Task is now pending to be moved to the task pool' text to appear before proceeding
+  await page.waitForSelector('text=Task is now pending to be moved to the task pool');
   await page.waitForTimeout(2000); // 2-second delay before proceeding to the next command
-  
-  // Make a request to the specified URL
-  await page.goto('https://pa-api-test.vercel.app/api/automation/web3/tasks/updates');
-  await page.waitForTimeout(2000); // 2-second delay to ensure the request is completed
-  console.log('Successfully request a new assistant.');
-  
-    // Function to wait until the page is fully loaded
-    async function waitForPageLoad(page) {
-        await page.waitForLoadState('load'); // Wait until the page load state is 'load'
-    }
 
-    for (let i = 0; i < 3; i++) {
-        await page.reload(); // Refresh the page
-        await waitForPageLoad(page); // Wait until the page is fully loaded
-        await page.waitForTimeout(2000); // 2-second delay between refreshes
-    }
+  // Function to attempt click and retry with refreshing the new tab
+async function attemptClickAndRetry() {
+  try {
+      // Attempt to click the element
+      await page.locator('td:nth-child(5)').first().click();
+  } catch (error) {
+      console.error('Failed to click the element. Retrying...');
 
-    // Close the page after refreshing
-    await page.close();
+      // Open a new page and refresh
+      const newPage = await browserContext.newPage();
+      await newPage.goto('https://pa-api-test.vercel.app/api/automation/web3/tasks/updates');
+      await newPage.waitForLoadState('load'); // Ensure the new page is fully loaded
+      console.log('The API URL was successfully opened and executed.');
 
-  // Close the browser context
+      // Refresh the new page a few times
+      for (let i = 0; i < 1; i++) {
+          await newPage.reload(); // Refresh the new page
+          await newPage.waitForLoadState('load'); // Wait until the new page is fully loaded
+          await newPage.waitForTimeout(2000); // 2-second delay between refreshes
+      }
+
+      // Close the new page
+      await newPage.close();
+
+      // Refresh the current page again
+      await page.reload(); // Refresh the current page
+      await page.waitForLoadState('load'); // Wait until the current page is fully loaded
+      await page.waitForTimeout(2000); // 2-second delay after refreshing the current page
+
+      // Retry the click
+      await page.locator('td:nth-child(5)').first().click();
+  }
+}
+
+// Perform the final interactions after the refresh
+await attemptClickAndRetry();
+
+  // Re-verify the heading after the page refresh
+  const refreshedHeadingText = await page.getByRole('heading').textContent();
+  console.log(`Heading after refresh: ${refreshedHeadingText}`);
+
+  if (refreshedHeadingText === headingText) {
+      console.log('The heading matches after the refresh.');
+  } else {
+      console.error('The heading does not match after the refresh.');
+  }
+
+  // Verify the "Published" status 
+  const reviewStatusExists = await page.getByLabel(refreshedHeadingText.trim()).getByText('Published').isVisible();
+
+  if (reviewStatusExists) {
+      console.log('Verified: "Published" status is present.');
+  } else {
+      console.error('Failed to verify: "Published" status is not present.');
+  }
+
+  await page.waitForTimeout(2000); // 2-second delay before continuing
+
+  // Continue with actions on the original page
+  await page.close();
   await browserContext.close();
-  
 });
 
 test('Request Improvements', async () => {
-  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '11.16.16_2');
+  const pathToExtension = path.join('C:', 'Users', 'johnm', 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Extensions', 'nkbihfbeogaeaoehlefnkodbefgpgknn', '12.0.5_2');
   const userDataDir = '/tmp/test-user-data-dir';
 
   // Launch browser with MetaMask extension and set slowMo
