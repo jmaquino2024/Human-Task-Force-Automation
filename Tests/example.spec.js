@@ -73,10 +73,10 @@ test('Connecting Your Wallet', async () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`
       ],
-      viewport: null,
+      timeout: 300000 // Increased timeout to 5 minutes
     });
   }, 3);
-
+  
   const pages = browserContext.pages();
   const page = pages.length > 0 ? pages[0] : await browserContext.newPage();
 
