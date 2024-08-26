@@ -15,18 +15,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: npm install
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 20.17.0
 
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      
     - name: Download MetaMask Extension
       run: |
         mkdir metamask
-        curl -L -o metamask.zip https://github.com/MetaMask/metamask-extension/releases/download/12.6.0/metamask-chrome-12.0.6.zip
-        unzip metamask.zip -d metamask
-
+        curl -L -o metamask.zip https://github.com/MetaMask/metamask-extension/releases/download/v12.6.0/metamask-chrome-v12.6.0.zip
+        powershell -Command "Expand-Archive -Path metamask.zip -DestinationPath metamask"
+      
     - name: Run tests with Playwright
       run: |
-        npx playwright install
         npx playwright test ./Tests/example.spec.js --headed
       env:
         METAMASK_PATH: ${{ github.workspace }}/metamask
