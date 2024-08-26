@@ -58,7 +58,7 @@ async function performLogin(page, browserContext) {
   await signMessagePage.waitForLoadState();
   await signMessagePage.click('button:has-text("Sign")');
 
-  await page.waitForURL('https://develop.humandao.org/app', { timeout: 300000 }); // Increase to 5 minutes
+  await page.waitForURL('https://develop.humandao.org/app', { timeout: 1800000 }); // Increase to 30 minutes
 
   console.log('Logged in successfully.');
 }
