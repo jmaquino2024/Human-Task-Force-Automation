@@ -20,19 +20,11 @@ jobs:
       with:
         node-version: 20.17.0
 
-    - name: Install Dependencies
-      run: |
-          npm install
-          npx playwright install chromium
-    - name: Install Xvfb
-      run: |
-          sudo apt-get update
-          sudo apt-get install xvfb
+    - name: Install dependencies
+      run: npm ci
 
-    - name: Set up Xvfb
-      run: |
-          Xvfb :99 &
-          export DISPLAY=:99
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
       
     - name: Download MetaMask Extension
       run: |
@@ -45,4 +37,3 @@ jobs:
         npx playwright test ./Tests/example.spec.js --headed
       env:
         METAMASK_PATH: ${{ github.workspace }}/metamask
-        DISPLAY: :99
