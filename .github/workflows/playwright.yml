@@ -25,21 +25,13 @@ jobs:
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-
+      
     - name: Download MetaMask Extension
       run: |
         mkdir metamask
         curl -L -o metamask.zip https://github.com/MetaMask/metamask-extension/releases/download/v12.6.0/metamask-chrome-v12.6.0.zip
-
-    - name: Install 7-Zip
-      uses: chrislennon/setup-7zip@v1
-      with:
-        version: '22.00'
-
-    - name: Unzip MetaMask Extension
-      run: |
-        7z x metamask.zip -o./metamask
-
+        powershell -Command "Expand-Archive -Path metamask.zip -DestinationPath metamask"
+      
     - name: Run tests with Playwright
       run: |
         npx playwright test ./Tests/example.spec.js --headed
